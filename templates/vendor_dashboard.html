@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Vendor Dashboard - TenderAI{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Vendor Dashboard</div>
+  <div class="page-subtitle">Welcome, {{ vendor.company_name if vendor else session["user"] }} (ID: {{ session["user"] }})</div>
+  {% if vendor %}
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
+    <div class="card" style="text-align:center;border-top:4px solid #2563eb;">
+      <div style="font-size:1.5rem;font-weight:800;color:#2563eb;">{{ vendor.years_experience or 0 }}</div>
+      <div style="color:#64748b;font-size:0.875rem;">Years Experience</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:4px solid #10b981;">
+      <div style="font-size:1.5rem;font-weight:800;color:#10b981;">{{ vendor.total_projects_completed or 0 }}</div>
+      <div style="color:#64748b;font-size:0.875rem;">Projects Completed</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:4px solid #f59e0b;">
+      <div style="font-size:1.5rem;font-weight:800;color:#f59e0b;">{{ vendor.head_office_district or "-" }}</div>
+      <div style="color:#64748b;font-size:0.875rem;">Head Office</div>
+    </div>
+  </div>
+  {% endif %}
+  <div class="card">
+    <div style="font-size:1.1rem;font-weight:700;color:#0f2544;margin-bottom:1rem;">Open Projects — Approve or Deny</div>
+    {% if projects %}
+    <div style="display:grid;gap:1rem;">
+      {% for p in projects %}
+      {% set already_responded = p.vendor_responses and session["user"] in p.vendor_responses %}
+      <div style="border:1.5px solid {% if already_responded %}#bbf7d0{% else %}#e2e8f0{% endif %};border-radius:10px;padding:1.25rem;background:{% if already_responded %}#f0fdf4{% else %}white{% endif %};">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-weight:700;font-size:1rem;color:#0f2544;">{{ p.project_name }}</div>
+            <div style="font-size:0.875rem;color:#64748b;margin-top:0.3rem;">{{ p.project_location }} | {{ p.work_type }} | Rs.{{ p.original_budget }}</div>
+            <div style="font-size:0.875rem;color:#64748b;">Deadline: <strong>{{ p.deadline_display }}</strong></div>
+          </div>
+          <div>
+            {% if already_responded %}
+              {% set resp = p.vendor_responses[session["user"]] %}
+              <span class="badge {% if resp.decision=="approve" %}badge-success{% else %}badge-danger{% endif %}" style="font-size:0.9rem;padding:0.4rem 1rem;">{{ resp.decision|upper }}</span>
+              {% if resp.decision=="approve" %}
+              <div style="font-size:0.8rem;color:#64748b;margin-top:0.4rem;">Cost: Rs.{{ resp.proposed_cost }} | Time: {{ resp.completion_time }} months</div>
+              {% endif %}
+            {% else %}
+              <a href="/vendor/respond/{{ p._id }}" class="btn btn-primary">Respond</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:3rem;color:#64748b;">No open projects at the moment.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

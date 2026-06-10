@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Create Vendor - TenderAI{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Create New Vendor</div>
+  <div class="page-subtitle">Register a new vendor/contractor in the system</div>
+  <div class="card">
+    <form method="POST">
+      <div class="section-header">1. Basic Company Information</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Company Name *</label><input type="text" name="company_name" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Type of Company *</label>
+          <select name="company_type" class="form-control" required><option value="">Select...</option><option>Proprietorship</option><option>Partnership</option><option>Pvt Ltd</option><option>Ltd</option></select></div>
+        <div class="form-group"><label class="form-label">Year of Establishment</label><input type="number" name="year_established" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Registration Number</label><input type="text" name="reg_number" class="form-control"></div>
+        <div class="form-group"><label class="form-label">GST Number</label><input type="text" name="gst_number" class="form-control"></div>
+        <div class="form-group"><label class="form-label">PAN Number</label><input type="text" name="pan_number" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Head Office District *</label>
+          <select name="head_office_district" class="form-control" required><option value="">Select...</option>{% for d in districts %}<option>{{ d }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Contact Number *</label><input type="text" name="contact_number" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Official Email *</label><input type="email" name="email" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Website</label><input type="text" name="website" class="form-control"></div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Branch Office Locations</label><input type="text" name="branch_locations" class="form-control"></div>
+      </div>
+      <div class="section-header">2. Ownership & Management</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Owner / MD Name *</label><input type="text" name="owner_name" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Key Decision Maker</label><input type="text" name="key_decision_maker" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Total Employees</label><input type="number" name="total_employees" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Organizational Structure</label><input type="text" name="org_structure" class="form-control"></div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Board of Directors</label><input type="text" name="board_of_directors" class="form-control"></div>
+      </div>
+      <div class="section-header">3. Business Profile</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Nature of Business</label><input type="text" name="nature_of_business" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Core Specialization</label><input type="text" name="core_specialization" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Service Areas</label><input type="text" name="service_areas" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Years of Experience *</label><input type="number" name="years_experience" class="form-control" required value="0"></div>
+        <div class="form-group"><label class="form-label">Avg Projects Per Year</label><input type="number" name="avg_projects_per_year" class="form-control"></div>
+      </div>
+      <div class="section-header">4. Financial Profile</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Avg Annual Turnover (Rs.)</label><input type="text" name="avg_annual_turnover" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Net Worth (Rs.)</label><input type="text" name="net_worth" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Financial Stability</label>
+          <select name="financial_stability" class="form-control"><option>Stable</option><option>Moderate</option><option>At Risk</option></select></div>
+        <div class="form-group"><label class="form-label">Financial Commitments</label><input type="text" name="financial_commitments" class="form-control"></div>
+      </div>
+      <div class="section-header">5. Technical Capacity</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Total Engineers</label><input type="number" name="total_engineers" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Total Technical Staff</label><input type="number" name="total_technical_staff" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Major Machinery</label><input type="text" name="major_machinery" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Equipment Capacity</label>
+          <select name="equipment_capacity" class="form-control"><option>Low</option><option>Medium</option><option>High</option></select></div>
+      </div>
+      <div class="section-header">6. Performance History</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Total Projects Completed *</label><input type="number" name="total_projects_completed" class="form-control" required value="0"></div>
+        <div class="form-group"><label class="form-label">Ongoing Projects</label><input type="number" name="ongoing_projects" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Govt Project Experience</label>
+          <select name="govt_experience" class="form-control"><option>Yes</option><option>No</option></select></div>
+        <div class="form-group"><label class="form-label">Blacklisting History</label>
+          <select name="blacklisting_history" class="form-control"><option>No</option><option>Yes</option></select></div>
+        <div class="form-group"><label class="form-label">Legal Disputes</label>
+          <select name="legal_disputes" class="form-control"><option>No</option><option>Yes</option></select></div>
+      </div>
+      <div class="section-header">7. Compliance & Certifications</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">ISO Certification</label>
+          <select name="iso_certification" class="form-control"><option>Not Certified</option><option>ISO 9001</option><option>ISO 14001</option><option>ISO 45001</option><option>Multiple</option></select></div>
+        <div class="form-group"><label class="form-label">Safety Compliance</label>
+          <select name="safety_compliance" class="form-control"><option>High</option><option>Medium</option><option>Low</option></select></div>
+        <div class="form-group"><label class="form-label">Environmental Compliance</label>
+          <select name="env_compliance" class="form-control"><option>Compliant</option><option>Partial</option><option>Non-Compliant</option></select></div>
+        <div class="form-group"><label class="form-label">Labour Law Compliance</label>
+          <select name="labour_compliance" class="form-control"><option>Compliant</option><option>Partial</option><option>Non-Compliant</option></select></div>
+      </div>
+      <div style="margin-top:2rem;display:flex;gap:1rem;">
+        <button type="submit" class="btn btn-primary">Create Vendor</button>
+        <a href="/admin" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

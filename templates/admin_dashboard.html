@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - TenderAI{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:2rem;">
+  <div class="page-title">Admin Dashboard</div>
+  <div class="page-subtitle">Welcome back, Administrator</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;">
+    <div class="card" style="text-align:center;border-top:4px solid #2563eb;">
+      <div style="font-size:2rem;font-weight:800;color:#2563eb;">{{ vendors|length }}</div>
+      <div style="color:#64748b;font-size:0.875rem;">Total Vendors</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:4px solid #10b981;">
+      <div style="font-size:2rem;font-weight:800;color:#10b981;">{{ projects|length }}</div>
+      <div style="color:#64748b;font-size:0.875rem;">Total Projects</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:4px solid #f59e0b;">
+      <div style="font-size:2rem;font-weight:800;color:#f59e0b;">{{ projects|selectattr("status","eq","open")|list|length }}</div>
+      <div style="color:#64748b;font-size:0.875rem;">Open Projects</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:4px solid #8b5cf6;">
+      <div style="font-size:2rem;font-weight:800;color:#8b5cf6;">{{ projects|selectattr("status","eq","closed")|list|length }}</div>
+      <div style="color:#64748b;font-size:0.875rem;">Closed Projects</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:2rem;">
+    <div style="font-size:1.1rem;font-weight:700;color:#0f2544;margin-bottom:1rem;">Quick Actions</div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+      <a href="/admin/create_vendor" class="btn btn-primary">+ Create Vendor</a>
+      <a href="/admin/add_work" class="btn btn-success">Add Vendor Work</a>
+      <a href="/admin/new_project" class="btn btn-gold">New Project</a>
+      <a href="/admin/project_status" class="btn btn-outline">Project Status</a>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:2rem;">
+    <div style="font-size:1.1rem;font-weight:700;color:#0f2544;margin-bottom:1rem;">Registered Vendors</div>
+    {% if vendors %}
+    <table>
+      <thead><tr><th>ID</th><th>Company</th><th>Type</th><th>District</th><th>Contact</th><th>Experience</th></tr></thead>
+      <tbody>
+        {% for v in vendors %}
+        <tr>
+          <td><span class="badge badge-info">{{ v.username }}</span></td>
+          <td><strong>{{ v.company_name or "-" }}</strong></td>
+          <td>{{ v.company_type or "-" }}</td>
+          <td>{{ v.head_office_district or "-" }}</td>
+          <td>{{ v.contact_number or "-" }}</td>
+          <td>{{ v.years_experience or 0 }} yrs</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color:#64748b;text-align:center;padding:2rem;">No vendors yet. <a href="/admin/create_vendor" style="color:#2563eb;">Create one</a></p>
+    {% endif %}
+  </div>
+  <div class="card">
+    <div style="font-size:1.1rem;font-weight:700;color:#0f2544;margin-bottom:1rem;">Recent Projects</div>
+    {% if projects %}
+    <table>
+      <thead><tr><th>Project</th><th>Location</th><th>Work Type</th><th>Budget</th><th>Deadline</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for p in projects[-5:] %}
+        <tr>
+          <td><strong>{{ p.project_name }}</strong></td>
+          <td>{{ p.project_location }}</td>
+          <td>{{ p.work_type }}</td>
+          <td>Rs.{{ p.original_budget }}</td>
+          <td>
+            {{ p.deadline_display }}
+            {% if not p.deadline_passed %}
+            <div style="font-size:0.72rem;color:#f59e0b;font-weight:600;">⏳ Deadline not reached</div>
+            {% endif %}
+          </td>
+          <td>{% if p.status=="open" %}<span class="badge badge-success">Open</span>{% else %}<span class="badge badge-warning">Closed</span>{% endif %}</td>
+          <td>
+            {% if p.deadline_passed %}
+              <a href="/admin/analyse/{{ p._id }}" class="btn btn-outline" style="padding:0.3rem 0.75rem;font-size:0.8rem;">Analyse</a>
+            {% else %}
+              <span class="btn btn-disabled" style="padding:0.3rem 0.75rem;font-size:0.8rem;" title="Available after deadline">🔒 Locked</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color:#64748b;text-align:center;padding:2rem;">No projects yet. <a href="/admin/new_project" style="color:#2563eb;">Create one</a></p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

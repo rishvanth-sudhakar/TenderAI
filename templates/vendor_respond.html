@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Respond - TenderAI{% endblock %}
+{% block content %}
+<div class="container" style="max-width:700px;">
+  <div class="page-title">Respond to Project</div>
+  <div class="page-subtitle">{{ project.project_name }}</div>
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;color:#0f2544;margin-bottom:1rem;">Project Details</div>
+    <div class="form-grid">
+      <div><span style="color:#64748b;font-size:0.8rem;">LOCATION</span><br><strong>{{ project.project_location }}</strong></div>
+      <div><span style="color:#64748b;font-size:0.8rem;">WORK TYPE</span><br><strong>{{ project.work_type }}</strong></div>
+      <div><span style="color:#64748b;font-size:0.8rem;">BUDGET</span><br><strong style="color:#10b981;">Rs.{{ project.original_budget }}</strong></div>
+      <div><span style="color:#64748b;font-size:0.8rem;">DEADLINE</span><br><strong>{{ project.deadline_display }}</strong></div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="font-weight:700;color:#0f2544;margin-bottom:1.5rem;">Your Response</div>
+    <form method="POST" id="responseForm">
+      <div class="form-group">
+        <label class="form-label">Decision *</label>
+        <div style="display:flex;gap:1rem;">
+          <label style="flex:1;cursor:pointer;">
+            <input type="radio" name="decision" value="approve" style="display:none;" onchange="toggleApprove(true)">
+            <div id="approveBtn" style="border:2px solid #e2e8f0;border-radius:10px;padding:1rem;text-align:center;transition:all 0.2s;">
+              <div style="font-size:1.5rem;">✅</div>
+              <div style="font-weight:600;color:#10b981;">APPROVE</div>
+              <div style="font-size:0.8rem;color:#64748b;">I want to bid for this project</div>
+            </div>
+          </label>
+          <label style="flex:1;cursor:pointer;">
+            <input type="radio" name="decision" value="deny" style="display:none;" onchange="toggleApprove(false)">
+            <div id="denyBtn" style="border:2px solid #e2e8f0;border-radius:10px;padding:1rem;text-align:center;transition:all 0.2s;">
+              <div style="font-size:1.5rem;">❌</div>
+              <div style="font-weight:600;color:#ef4444;">DENY</div>
+              <div style="font-size:0.8rem;color:#64748b;">Not interested</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div id="approveFields" style="display:none;">
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:1rem;margin-bottom:1rem;font-size:0.82rem;color:#166534;">
+          💡 Your proposed cost and time will be compared against the project budget and planned duration to determine your AI ranking.
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Proposed Cost (Rs.) *</label><input type="text" name="proposed_cost" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Completion Time (months) *</label><input type="number" name="completion_time" class="form-control"></div>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem;display:flex;gap:1rem;">
+        <button type="submit" class="btn btn-primary">Submit Response</button>
+        <a href="/vendor" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+function toggleApprove(show) {
+  document.getElementById("approveFields").style.display = show ? "block" : "none";
+  document.getElementById("approveBtn").style.borderColor = show ? "#10b981" : "#e2e8f0";
+  document.getElementById("approveBtn").style.background = show ? "#f0fdf4" : "white";
+  document.getElementById("denyBtn").style.borderColor = !show ? "#ef4444" : "#e2e8f0";
+  document.getElementById("denyBtn").style.background = !show ? "#fef2f2" : "white";
+}
+</script>
+{% endblock %}

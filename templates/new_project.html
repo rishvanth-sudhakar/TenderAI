@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}New Project - TenderAI{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Create New Project</div>
+  <div class="page-subtitle">Post a new tender project for vendor bidding</div>
+  <div class="card">
+    <form method="POST">
+      <div class="section-header">1. Basic Project Identification</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Project Name *</label><input type="text" name="project_name" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Location *</label>
+          <select name="project_location" class="form-control" required><option value="">Select District...</option>{% for d in districts %}<option>{{ d }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Client Name</label><input type="text" name="client_name" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Client Type</label>
+          <select name="client_type" class="form-control"><option>Govt</option><option>PSU</option><option>Private</option><option>Individual</option></select></div>
+        <div class="form-group"><label class="form-label">Year of Award</label><input type="number" name="year_award" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Year of Completion</label><input type="number" name="year_completion" class="form-control"></div>
+      </div>
+      <div class="section-header">2. Type of Work</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Work Type *</label>
+          <select name="work_type" class="form-control" required><option value="">Select...</option>{% for wt in work_types %}<option>{{ wt }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">If Other, Specify</label><input type="text" name="work_type_other" class="form-control"></div>
+      </div>
+      <div class="section-header">3. Financial Details</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Original Budget (Rs.) *</label><input type="text" name="original_budget" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Final Project Cost (Rs.)</label><input type="text" name="final_cost" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Budget Variation (Rs.)</label><input type="text" name="budget_variation" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Budget Overrun (%)</label><input type="number" name="budget_overrun_pct" class="form-control" step="0.01"></div>
+      </div>
+      <div class="section-header">4. Time & Completion</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Planned Start</label><input type="date" name="planned_start" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Planned Completion</label><input type="date" name="planned_completion" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Planned Duration (months)</label><input type="number" name="planned_duration" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Complexity Level</label>
+          <select name="complexity_level" class="form-control"><option>Low</option><option>Medium</option><option>High</option></select></div>
+      </div>
+      <div class="section-header">5. Scope & Risk</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Built-up Area (sqft)</label><input type="text" name="built_up_area" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Length/Area Covered</label><input type="text" name="length_area_covered" class="form-control"></div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Major Challenges Expected</label><textarea name="major_challenges" class="form-control" rows="2"></textarea></div>
+        <div class="form-group"><label class="form-label">Legal Disputes History?</label>
+          <select name="legal_disputes" class="form-control"><option>No</option><option>Yes</option></select></div>
+      </div>
+      <div class="section-header">Submission Deadline</div>
+      <div class="form-grid" style="max-width:600px;">
+        <div class="form-group">
+          <label class="form-label">Deadline Date *</label>
+          <input type="date" name="deadline_date" id="deadline_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deadline Time *</label>
+          <input type="time" name="deadline_time" id="deadline_time" class="form-control" required>
+        </div>
+      </div>
+      <input type="hidden" name="submission_deadline_dt" id="submission_deadline_dt">
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:#9a3412;max-width:600px;">
+        ⏰ <strong>Important:</strong> The Analyse button will be locked for this project until the above deadline date & time has passed.
+      </div>
+      <div style="margin-top:2rem;display:flex;gap:1rem;">
+        <button type="submit" class="btn btn-gold" onclick="combineDatetime()">Create Project</button>
+        <a href="/admin" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+function combineDatetime() {
+  var d = document.getElementById("deadline_date").value;
+  var t = document.getElementById("deadline_time").value;
+  if (d && t) {
+    document.getElementById("submission_deadline_dt").value = d + "T" + t;
+  }
+}
+// Also combine on form submit
+document.querySelector("form").addEventListener("submit", function() { combineDatetime(); });
+</script>
+{% endblock %}

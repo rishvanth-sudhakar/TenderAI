@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% block title %}Analyse - TenderAI{% endblock %}
+{% block content %}
+<div class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+    <div>
+      <div class="page-title">AI Project Analysis</div>
+      <div class="page-subtitle">{{ project.project_name }}</div>
+    </div>
+    <div style="display:flex;gap:0.75rem;">
+      {% if deadline_passed %}
+        <a href="/admin/generate_pdf/{{ project._id }}" class="btn btn-gold">Download PDF</a>
+      {% endif %}
+      <a href="/admin/project_status" class="btn btn-outline">Back</a>
+    </div>
+  </div>
+
+  {% if not deadline_passed %}
+  <!-- ── DEADLINE NOT PASSED — LOCKED STATE ── -->
+  <div style="background:#fff7ed;border:2px solid #fed7aa;border-radius:16px;padding:3rem;text-align:center;margin-bottom:1.5rem;">
+    <div style="font-size:4rem;margin-bottom:1rem;">🔒</div>
+    <div style="font-size:1.4rem;font-weight:700;color:#9a3412;margin-bottom:0.5rem;">Analysis Locked</div>
+    <p style="color:#c2410c;font-size:0.95rem;margin-bottom:1.5rem;">
+      This project's submission deadline has <strong>not yet passed</strong>.<br>
+      AI analysis and vendor recommendations will be available after the deadline.
+    </p>
+    <div style="display:inline-block;background:#fef3c7;border:1.5px solid #f59e0b;border-radius:10px;padding:1rem 2rem;">
+      <div style="font-size:0.8rem;color:#92400e;margin-bottom:0.25rem;">SUBMISSION DEADLINE</div>
+      <div style="font-size:1.3rem;font-weight:800;color:#92400e;">{{ deadline_display }}</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
+    <div class="card">
+      <div style="font-weight:700;color:#0f2544;margin-bottom:1rem;">Project Details</div>
+      <table style="font-size:0.875rem;">
+        <tr><td style="color:#64748b;padding:0.3rem 1rem 0.3rem 0;width:140px;">Name</td><td><strong>{{ project.project_name }}</strong></td></tr>
+        <tr><td style="color:#64748b;padding:0.3rem 1rem 0.3rem 0;">Location</td><td>{{ project.project_location }}</td></tr>
+        <tr><td style="color:#64748b;padding:0.3rem 1rem 0.3rem 0;">Work Type</td><td>{{ project.work_type }}</td></tr>
+        <tr><td style="color:#64748b;padding:0.3rem 1rem 0.3rem 0;">Budget</td><td><strong style="color:#10b981;">Rs.{{ project.original_budget }}</strong></td></tr>
+        <tr><td style="color:#64748b;padding:0.3rem 1rem 0.3rem 0;">Deadline</td><td>{{ deadline_display }}</td></tr>
+        <tr><td style="color:#64748b;padding:0.3rem 1rem 0.3rem 0;">Complexity</td><td>{{ project.complexity_level }}</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;color:#0f2544;margin-bottom:1rem;">AI Assessment</div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.8rem;color:#64748b;margin-bottom:0.3rem;">PROJECT TIER</div>
+        <span class="badge {% if project_tier=="High" %}badge-danger{% elif project_tier=="Medium" %}badge-warning{% else %}badge-success{% endif %}" style="font-size:1rem;padding:0.4rem 1rem;">{{ project_tier }} Value</span>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.8rem;color:#64748b;margin-bottom:0.3rem;">VENDOR RESPONSES</div>
+        {% if project.vendor_responses %}
+          {% for vname, resp in project.vendor_responses.items() %}
+          <span class="badge {% if resp.decision=="approve" %}badge-success{% else %}badge-danger{% endif %}" style="margin-right:0.3rem;">{{ vname }}: {{ resp.decision|upper }}</span>
+          {% endfor %}
+        {% else %}<span style="color:#64748b;font-size:0.875rem;">No responses yet</span>{% endif %}
+      </div>
+      <div style="font-size:0.875rem;color:#1e293b;">
+        {% if project_tier=="High" %}Tier A vendors recommended (High experience required)
+        {% elif project_tier=="Medium" %}Tier A + Tier B vendors eligible
+        {% else %}Tier C vendors preferred (Equal opportunity for new vendors){% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if deadline_passed %}
+  <div class="card">
+    <div style="font-size:1.1rem;font-weight:700;color:#0f2544;margin-bottom:0.5rem;">Top Recommended Vendors (AI Ranked)</div>
+    <div style="font-size:0.82rem;color:#64748b;margin-bottom:1.25rem;">
+      ✅ Only vendors who <strong>approved</strong> the project are included. Ranked by AI score incorporating experience, track record, proposed cost vs budget, and proposed time vs planned duration.
+    </div>
+    {% if top_vendors %}
+    <div style="display:grid;gap:1rem;">
+      {% for v in top_vendors %}
+      <div style="display:flex;align-items:center;gap:1.25rem;padding:1rem;border-radius:10px;border:1.5px solid {% if loop.index==1 %}#f59e0b{% else %}#e2e8f0{% endif %};background:{% if loop.index==1 %}#fffbeb{% else %}#f8fafc{% endif %};">
+        <div style="width:48px;height:48px;border-radius:50%;background:{% if loop.index==1 %}#f59e0b{% elif loop.index==2 %}#94a3b8{% elif loop.index==3 %}#b45309{% else %}#1a3c5e{% endif %};color:white;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;flex-shrink:0;">{{ loop.index }}</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;color:#0f2544;">{{ v.company_name }}</div>
+          <div style="font-size:0.8rem;color:#64748b;">ID: {{ v.username }} | Exp: {{ v.experience }} yrs | Projects: {{ v.projects_completed }}</div>
+          <div style="font-size:0.8rem;color:#0f2544;margin-top:0.2rem;">
+            💰 Proposed: <strong style="color:#10b981;">Rs.{{ v.proposed_cost }}</strong>
+            &nbsp;&nbsp;⏱ Time: <strong style="color:#2563eb;">{{ v.proposed_time }} months</strong>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:1.2rem;font-weight:800;color:#2563eb;">{{ v.score }}</div>
+          <div style="font-size:0.75rem;color:#64748b;">AI Score</div>
+        </div>
+        <span class="badge {% if v.tier=="A" %}badge-success{% elif v.tier=="B" %}badge-warning{% else %}badge-info{% endif %}" style="font-size:0.9rem;padding:0.3rem 0.8rem;">Tier {{ v.tier }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="margin-top:1.5rem;padding:1rem;background:#f0f4ff;border-radius:8px;font-size:0.85rem;color:#1a3c5e;">
+      <strong>Scoring criteria:</strong> Experience (20pts) + On-time delivery (20pts) + Budget adherence (20pts) + Financial capacity (20pts) + Clean record (20pts) + Tier &amp; work-type match bonus + Proposed cost vs budget (max +20pts) + Proposed time vs planned duration (max +15pts).
+    </div>
+    {% if top_vendors %}
+    <!-- Charts Section -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem;">
+      <div class="card" style="padding:1.25rem;">
+        <div style="font-weight:700;color:#0f2544;margin-bottom:1rem;font-size:0.95rem;">📊 AI Score Comparison</div>
+        <canvas id="scoreChart" height="220"></canvas>
+      </div>
+      <div class="card" style="padding:1.25rem;">
+        <div style="font-weight:700;color:#0f2544;margin-bottom:1rem;font-size:0.95rem;">💰 Proposed Cost vs Budget</div>
+        <canvas id="costChart" height="220"></canvas>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+    (function() {
+      var vendors = {{ top_vendors | tojson }};
+      var labels = vendors.map(function(v){ return v.company_name.length > 12 ? v.company_name.substring(0,12)+"…" : v.company_name; });
+      var scores = vendors.map(function(v){ return v.score; });
+      var costs = vendors.map(function(v){
+        var c = parseFloat(String(v.proposed_cost).replace(/,/g,""));
+        return isNaN(c) ? 0 : c;
+      });
+      var budget = parseFloat("{{ project.original_budget }}".replace(/,/g,"")) || 0;
+      var palette = ["#2563eb","#10b981","#f59e0b","#8b5cf6","#ef4444"];
+
+      // Chart 1 — AI Scores horizontal bar
+      new Chart(document.getElementById("scoreChart"), {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "AI Score",
+            data: scores,
+            backgroundColor: palette,
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { beginAtZero: true, grid: { color: "#e2e8f0" }, ticks: { font: { size: 11 } } },
+            y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+          }
+        }
+      });
+
+      // Chart 2 — Proposed Cost vs Budget
+      var costDatasets = [{
+        label: "Proposed Cost",
+        data: costs,
+        backgroundColor: palette,
+        borderRadius: 6,
+      }];
+      new Chart(document.getElementById("costChart"), {
+        type: "bar",
+        data: { labels: labels, datasets: costDatasets },
+        options: {
+          plugins: {
+            legend: { display: false },
+            annotation: {}
+          },
+          scales: {
+            x: { ticks: { font: { size: 11 } }, grid: { color: "#e2e8f0" } },
+            y: {
+              beginAtZero: true,
+              grid: { display: false },
+              ticks: {
+                font: { size: 10 },
+                callback: function(v){ return "Rs."+(v>=10000000?(v/10000000).toFixed(1)+"Cr":v>=100000?(v/100000).toFixed(1)+"L":v); }
+              }
+            }
+          }
+        },
+        plugins: [{
+          id: "budgetLine",
+          afterDraw: function(chart) {
+            if (!budget) return;
+            var yScale = chart.scales.y;
+            var xScale = chart.scales.x;
+            var ctx2 = chart.ctx;
+            var yPixel = yScale.getPixelForValue(budget);
+            ctx2.save();
+            ctx2.beginPath();
+            ctx2.moveTo(xScale.left, yPixel);
+            ctx2.lineTo(xScale.right, yPixel);
+            ctx2.strokeStyle = "#ef4444";
+            ctx2.lineWidth = 2;
+            ctx2.setLineDash([6,3]);
+            ctx2.stroke();
+            ctx2.fillStyle = "#ef4444";
+            ctx2.font = "bold 10px sans-serif";
+            ctx2.fillText("Budget", xScale.right - 50, yPixel - 4);
+            ctx2.restore();
+          }
+        }]
+      });
+    })();
+    </script>
+    {% endif %}
+    {% else %}
+    <div style="text-align:center;padding:2.5rem;color:#64748b;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">📭</div>
+      <strong>No approved bids yet.</strong><br>
+      <span style="font-size:0.875rem;">Vendors who click Approve and submit a cost & time proposal will appear here.</span>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

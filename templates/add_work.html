@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Add Work - TenderAI{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Add Vendor Work History</div>
+  <div class="page-subtitle">Record past project experience for a vendor</div>
+  <div class="card">
+    <form method="POST">
+      <div class="form-group"><label class="form-label">Select Vendor *</label>
+        <select name="vendor_username" class="form-control" required>
+          <option value="">Select Vendor...</option>
+          {% for v in vendors %}<option value="{{ v.username }}">{{ v.username }} - {{ v.company_name or "N/A" }}</option>{% endfor %}
+        </select></div>
+      <div class="section-header">1. Basic Project Identification</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Project Name *</label><input type="text" name="project_name" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Location (District)</label>
+          <select name="project_location" class="form-control"><option value="">Select...</option>{% for d in districts %}<option>{{ d }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Client Name</label><input type="text" name="client_name" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Client Type</label>
+          <select name="client_type" class="form-control"><option>Govt</option><option>PSU</option><option>Private</option><option>Individual</option></select></div>
+        <div class="form-group"><label class="form-label">Year of Award</label><input type="number" name="year_award" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Year of Completion</label><input type="number" name="year_completion" class="form-control"></div>
+      </div>
+      <div class="section-header">2. Type of Work</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Work Type *</label>
+          <select name="work_type" class="form-control" required><option value="">Select...</option>{% for wt in work_types %}<option>{{ wt }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">If Other, Specify</label><input type="text" name="work_type_other" class="form-control"></div>
+      </div>
+      <div class="section-header">3. Financial Details</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Original Budget (Rs.)</label><input type="text" name="original_budget" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Final Cost (Rs.)</label><input type="text" name="final_cost" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Budget Variation (Rs.)</label><input type="text" name="budget_variation" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Budget Overrun (%)</label><input type="number" name="budget_overrun_pct" class="form-control" step="0.01"></div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Reason for Cost Increase</label><input type="text" name="cost_increase_reason" class="form-control"></div>
+      </div>
+      <div class="section-header">4. Time & Completion</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Planned Start</label><input type="date" name="planned_start" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Planned Completion</label><input type="date" name="planned_completion" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Actual Completion</label><input type="date" name="actual_completion" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Planned Duration (months)</label><input type="number" name="planned_duration" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Actual Duration (months)</label><input type="number" name="actual_duration" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Delay (months)</label><input type="number" name="delay_months" class="form-control"></div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Reason for Delay</label><input type="text" name="delay_reason" class="form-control"></div>
+      </div>
+      <div class="section-header">5. Performance Metrics</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Work Completed (%)</label><input type="number" name="work_completed_pct" class="form-control" max="100"></div>
+        <div class="form-group"><label class="form-label">Completed On Time?</label>
+          <select name="completed_on_time" class="form-control"><option>Yes</option><option>No</option></select></div>
+        <div class="form-group"><label class="form-label">Within Budget?</label>
+          <select name="completed_within_budget" class="form-control"><option>Yes</option><option>No</option></select></div>
+        <div class="form-group"><label class="form-label">Client Satisfaction (1-5)</label>
+          <select name="client_satisfaction" class="form-control"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></div>
+        <div class="form-group"><label class="form-label">Penalty Imposed?</label>
+          <select name="penalty_imposed" class="form-control"><option>No</option><option>Yes</option></select></div>
+        <div class="form-group"><label class="form-label">Early Completion Bonus?</label>
+          <select name="early_completion_bonus" class="form-control"><option>No</option><option>Yes</option></select></div>
+      </div>
+      <div class="section-header">6. Scope & Risk</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Built-up Area (sqft)</label><input type="text" name="built_up_area" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Length/Area Covered</label><input type="text" name="length_area_covered" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Units Completed</label><input type="number" name="units_completed" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Complexity Level</label>
+          <select name="complexity_level" class="form-control"><option>Low</option><option>Medium</option><option>High</option></select></div>
+        <div class="form-group" style="grid-column:span 2"><label class="form-label">Major Challenges</label><textarea name="major_challenges" class="form-control" rows="2"></textarea></div>
+        <div class="form-group"><label class="form-label">Legal Disputes?</label>
+          <select name="legal_disputes" class="form-control"><option>No</option><option>Yes</option></select></div>
+        <div class="form-group"><label class="form-label">Arbitration Cases</label><input type="text" name="arbitration_cases" class="form-control"></div>
+      </div>
+      <div style="margin-top:2rem;display:flex;gap:1rem;">
+        <button type="submit" class="btn btn-primary">Save Work Record</button>
+        <a href="/admin" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

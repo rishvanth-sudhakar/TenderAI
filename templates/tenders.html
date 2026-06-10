@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Tenders - TenderAI{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Tamil Nadu Tenders</div>
+  <div class="page-subtitle">{{ total }} tenders found in database</div>
+
+  <!-- Search & Filter -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <form method="GET" action="/tenders" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;">
+      <div class="form-group" style="flex:2;margin-bottom:0;">
+        <label class="form-label">Search</label>
+        <input type="text" name="search" class="form-control" placeholder="Search by title, authority, reference..." value="{{ search }}">
+      </div>
+      <div class="form-group" style="flex:1;margin-bottom:0;">
+        <label class="form-label">Department</label>
+        <select name="department" class="form-control">
+          <option value="">All Departments</option>
+          {% for d in departments %}
+          <option value="{{ d }}" {% if d == department %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a href="/tenders" class="btn btn-outline">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tenders Table -->
+  <div class="card">
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tender ID</th>
+            <th>Title</th>
+            <th>Department</th>
+            <th>Location</th>
+            <th>Closing Date</th>
+            <th>Authority</th>
+            <th>Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in tenders %}
+          <tr>
+            <td style="color:#94a3b8;">{{ loop.index + (page-1)*25 }}</td>
+            <td><span class="badge badge-info" style="font-size:0.75rem;">{{ t.TenderID }}</span></td>
+            <td><strong>{{ t.TenderTitle }}</strong></td>
+            <td><span class="badge badge-warning">{{ t.Department }}</span></td>
+            <td>{{ t.Location }}</td>
+            <td>{{ t.ClosingDate }}</td>
+            <td>{{ t.TenderAuthority }}</td>
+            <td style="color:#64748b;font-size:0.8rem;">{{ t.ReferenceSource }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div style="display:flex;justify-content:center;align-items:center;gap:0.5rem;margin-top:1.5rem;flex-wrap:wrap;">
+      {% if page > 1 %}
+      <a href="/tenders?page={{ page-1 }}&search={{ search }}&department={{ department }}" class="btn btn-outline" style="padding:0.4rem 0.9rem;">← Prev</a>
+      {% endif %}
+
+      {% for p in range(1, total_pages+1) %}
+        {% if p == page %}
+        <span style="padding:0.4rem 0.9rem;background:#2563eb;color:white;border-radius:8px;font-weight:600;">{{ p }}</span>
+        {% elif p <= 3 or p >= total_pages-2 or (p >= page-2 and p <= page+2) %}
+        <a href="/tenders?page={{ p }}&search={{ search }}&department={{ department }}" class="btn btn-outline" style="padding:0.4rem 0.9rem;">{{ p }}</a>
+        {% elif p == 4 or p == total_pages-3 %}
+        <span style="padding:0.4rem 0.5rem;color:#94a3b8;">...</span>
+        {% endif %}
+      {% endfor %}
+
+      {% if page < total_pages %}
+      <a href="/tenders?page={{ page+1 }}&search={{ search }}&department={{ department }}" class="btn btn-outline" style="padding:0.4rem 0.9rem;">Next →</a>
+      {% endif %}
+    </div>
+    <div style="text-align:center;color:#64748b;font-size:0.8rem;margin-top:0.5rem;">
+      Page {{ page }} of {{ total_pages }} &nbsp;|&nbsp; {{ total }} total tenders
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
